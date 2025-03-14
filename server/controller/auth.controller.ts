@@ -91,7 +91,8 @@ export const loginUser = async (req: Request, res: Response) => {
 
       res
         .cookie("access-token", token, {
-          httpOnly: true,
+          httpOnly: true, // ✅ Prevents JavaScript access (more secure)
+          secure: true, // ✅ Only in HTTPS for production
         })
         .status(200)
         .json({
@@ -114,7 +115,7 @@ export const loginUser = async (req: Request, res: Response) => {
 export const logoutUser = async (req: Request, res: Response) => {
   try {
     res
-      .clearCookie("access_token", {
+      .clearCookie("access-token", {
         sameSite: true,
         secure: true,
       })

@@ -10,9 +10,15 @@ import usersRouter from "./routes/users.route";
 const server = express();
 const PORT = 4001;
 
-server.use(cors());
-server.use(express.json());
+server.use(
+  cors({
+    origin: "http://localhost:3000", // ✅ Frontend URL
+    credentials: true, // ✅ Required for cookies
+  })
+);
 server.use(cookieParser());
+server.use(express.json());
+
 server.use("/images", express.static("uploads"));
 server.use("/api/posts", postsRouter);
 server.use("/api/auth", authRouter);

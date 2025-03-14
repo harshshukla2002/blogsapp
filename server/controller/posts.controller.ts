@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
 import moment from "moment";
+import fs from "fs";
 
 export const addPost = async (req: any, res: Response) => {
   try {
@@ -41,7 +42,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const { category } = req.query;
     const query = category
-      ? "SELECT * FROM posts WHERE category ?"
+      ? "SELECT * FROM posts WHERE category = ?"
       : "SELECT * FROM posts";
 
     db.query(query, [category], (err, result) => {
@@ -69,9 +70,9 @@ export const getSinglePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const query =
-      "SELECT `username`, `title`, `desc`, p.image, u.image AS userImage, `category`, `date`, FROM users u JOIN posts p ON u.id === p.uid WHERE p.id = ?";
+      "SELECT p.id, `username`, `title`, `desc`, p.image, u.image AS userImg, `category`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ? ";
 
-    db.query(query, [id], (err, result: any) => {
+    db.query(query, [Number(id)], (err, result: any) => {
       if (err) {
         return res.status(500).json({
           message: err.message || "error on get all post",
@@ -132,7 +133,7 @@ export const deletePosts = async (req: any, res: Response) => {
     const { id: userId } = req.user;
     const query = "DELETE FROM posts WHERE `id`= ? AND `uid` = ?";
 
-    db.query(query, [postId, userId], (err, result) => {
+    db.query(query, [postId, userId], (err, result: any) => {
       if (err) {
         return res.status(500).json({
           message: err.message || "error on delete posts",
@@ -140,7 +141,6 @@ export const deletePosts = async (req: any, res: Response) => {
           error: err,
         });
       }
-
       return res
         .status(200)
         .json({ message: "post deleted successfully", success: true });
